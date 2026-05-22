@@ -49,26 +49,56 @@ app.get('/fetchReviews', async (req, res) => {
 // Express route to fetch reviews by a particular dealer
 app.get('/fetchReviews/dealer/:id', async (req, res) => {
   try {
-    const documents = await Reviews.find({dealership: req.params.id});
-    res.json(documents);
+    const dealerId = parseInt(req.params.id); 
+
+    const reviews = await Reviews.find({ dealership: dealerId }); 
+    
+    res.status(200).json(reviews);
   } catch (error) {
-    res.status(500).json({ error: 'Error fetching documents' });
+    res.status(500).json({ error: "Error fetching reviews" });
   }
 });
-
 // Express route to fetch all dealerships
 app.get('/fetchDealers', async (req, res) => {
-//Write your code here
+  try {
+    const dealers = await Dealerships.find();
+    res.status(200).json(dealers);
+  } catch (error) {
+    console.error("Error fetching dealerships:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
 });
 
 // Express route to fetch Dealers by a particular state
 app.get('/fetchDealers/:state', async (req, res) => {
-//Write your code here
+  try {
+    const state = req.params.state;
+    const dealers = await Dealerships.find({ state: state });
+    
+    if (dealers.length === 0) {
+      return res.status(404).json({ message: "No dealerships found in this state" });
+    }
+    res.status(200).json(dealers);
+  } catch (error) {
+    console.error("Error fetching dealerships by state:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
 });
 
 // Express route to fetch dealer by a particular id
 app.get('/fetchDealer/:id', async (req, res) => {
-//Write your code here
+  try {
+    const id = req.params.id; 
+    const dealer = await Dealerships.findOne({ id: parseInt(id) });
+    
+    if (!dealer) {
+      return res.status(404).json({ message: "Dealership not found" });
+    }
+    res.status(200).json(dealer);
+  } catch (error) {
+    console.error("Error fetching dealership by ID:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
 });
 
 //Express route to insert review
